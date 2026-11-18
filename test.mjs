@@ -46,7 +46,70 @@ const reject = { kind: 'reject' }
 assert.equal(await hook(payload, async () => reject), reject)
 const existing = { ...base, messages: [{ source: { kind: 'pressure-check' } }, user] }
 assert.equal(await hook(payload, async () => existing), existing)
-console.log('PASS: Host config, live 0–5 switching, distinct prompts, reject/abort/continuation/dedup')
+// Every level has its own four-item cycle, including legacy text compatibility.
+assert.equal(plugin.PROMPT_POOLS[0].length, 0)
+const mounted = options => {
+  const state = resolveConfig(plugin, { enabled: true, level: 3, ...options })
+  let run
+  plugin.apply({ on(event, fn) { assert.equal(event, 'agent/pre-step'); run = fn } }, state)
+  const update = (key, value) => {
+    const next = resolveConfig(plugin, { enabled: true, level: 3, [key]: value })
+    updateVolatile(state[key], next[key])
+  }
+  return { run, update, enter: () => run(payload, async () => base) }
+}
+const promptText = decision => decision.messages[0].content[0].text
+for (let level = 1; level <= 5; level++) {
+  const pool = plugin.PROMPT_POOLS[level]
+  assert.equal(pool.length, 4)
+  assert.equal(new Set(pool).size, 4)
+  assert.equal(Object.isFrozen(pool), true)
+  assert.equal(pool[0], plugin.LEVEL_TEXT[level], 'first item must preserve the original prompt')
+  const instance = mounted({ level, text: plugin.LEVEL_TEXT[3] })
+  for (let i = 0; i < 8; i++) {
+    const decision = await instance.enter()
+    assert.equal(promptText(decision), pool[i % 4])
+    assert.equal(decision.messages[1], user)
+    assert.equal(decision.startsRequestSeries, true)
+  }
+}
+assert.equal(new Set(Object.values(plugin.PROMPT_POOLS).flat()).size, 20)
+const cycle = mounted()
+assert.equal(promptText(await cycle.enter()), plugin.PROMPT_POOLS[3][0])
+assert.equal(await cycle.run({ ...payload, messages: [] }, async () => base), base)
+assert.equal(await cycle.run({ ...payload, signal: { aborted: true } }, async () => base), base)
+assert.equal(await cycle.run(payload, async () => reject), reject)
+for (const kind of ['skip', 'abort']) {
+  const decision = { kind }
+  assert.equal(await cycle.run(payload, async () => decision), decision)
+}
+const missingMessages = { kind: 'enter' }
+assert.equal(await cycle.run(payload, async () => missingMessages), missingMessages)
+assert.equal(await cycle.run(payload, async () => existing), existing)
+cycle.update('level', 0)
+assert.equal(await cycle.enter(), base)
+cycle.update('level', 3)
+cycle.update('enabled', false)
+assert.equal(await cycle.enter(), base)
+cycle.update('enabled', true)
+assert.equal(promptText(await cycle.enter()), plugin.PROMPT_POOLS[3][1], 'skips must not advance the cycle')
+cycle.update('text', 'Use my exact custom checklist.')
+assert.equal(promptText(await cycle.enter()), 'Use my exact custom checklist.')
+assert.equal(promptText(await cycle.enter()), 'Use my exact custom checklist.')
+cycle.update('text', '')
+assert.equal(promptText(await cycle.enter()), plugin.PROMPT_POOLS[3][2], 'custom text must not consume a pool slot')
+cycle.update('level', 1)
+assert.equal(promptText(await cycle.enter()), plugin.PROMPT_POOLS[1][0])
+cycle.update('level', 3)
+assert.equal(promptText(await cycle.enter()), plugin.PROMPT_POOLS[3][3], 'each level keeps its own position')
+assert.equal(promptText(await mounted().enter()), plugin.PROMPT_POOLS[3][0], 'reload starts a fresh cycle')
+const concurrent = mounted()
+const decisions = await Promise.all(Array.from({ length: 8 }, () => concurrent.enter()))
+const actualCounts = new Map()
+for (const decision of decisions) actualCounts.set(promptText(decision), (actualCounts.get(promptText(decision)) ?? 0) + 1)
+assert.equal(actualCounts.size, 4)
+for (const count of actualCounts.values()) assert.equal(count, 2, 'concurrent requests must not lose cursor increments')
+console.log('PASS: Host config, 20 prompts, per-level rotation, custom/legacy text, skips, concurrency and reload')
 
 // Isolate the client controller and slot contracts; no React/DOM rendering is simulated.
 let bundle

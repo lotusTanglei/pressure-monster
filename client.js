@@ -9,7 +9,7 @@ window.__ModuleLoader__.load({
       zh: {
         title: '压力怪', description: '一个专门给第一反应挑刺的小搭档。让答案出门前，再过一道关。',
         eyebrow: 'YOUR SECOND THOUGHT', lab: '自检实验室', preview: '正在预览', active: '当前生效', notLoaded: '等待配置', lastKnown: '上次确认', previewOnly: '尚未读到配置，下面仅为外观预览。',
-        choose: '给它一点压力', chooseHint: '拖动滑条，或直接点选一只压力怪。选择后记得保存。',
+        choose: '给它一点压力', chooseHint: '1–5 档各 4 条提示自动轮换，0 档关闭。选好后保存。',
         monster0: '休眠怪', monster1: '探头怪', monster2: '好奇怪', monster3: '挑刺怪', monster4: '较真怪', monster5: '反证怪',
         speech0: '这次我先休息，你来发挥。', speech1: '等等，前提看清楚了吗？', speech2: '换个角度，会不会不一样？',
         speech3: '先别急。最强的反驳是什么？', speech4: '这个答案，经得起多面审查吗？', speech5: '现在，试着推翻你自己的答案。',
@@ -29,7 +29,7 @@ window.__ModuleLoader__.load({
       en: {
         title: 'Pressure monster', description: 'A little partner that questions your first instinct. One more check before the answer goes out.',
         eyebrow: 'YOUR SECOND THOUGHT', lab: 'Self-check lab', preview: 'Previewing', active: 'Active', notLoaded: 'Awaiting configuration', lastKnown: 'Last confirmed', previewOnly: 'Configuration has not loaded. The character below is a visual preview only.',
-        choose: 'Turn up the scrutiny', chooseHint: 'Move the slider or pick a monster. Save to apply your choice.',
+        choose: 'Turn up the scrutiny', chooseHint: 'Levels 1–5 each cycle through 4 prompts; 0 is off. Pick a level and save.',
         monster0: 'Sleepy', monster1: 'Scout', monster2: 'Curious', monster3: 'Challenger', monster4: 'Inspector', monster5: 'Falsifier',
         speech0: 'I will sit this one out.', speech1: 'Wait. Did you check the premise?', speech2: 'What if we look at it another way?',
         speech3: 'Not so fast. What is the strongest objection?', speech4: 'Does this answer survive a closer inspection?', speech5: 'Now try to prove your own answer wrong.',

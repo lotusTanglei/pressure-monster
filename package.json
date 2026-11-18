@@ -1,6 +1,6 @@
 {
   "name": "dsh-pressure-check",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": true,
   "description": "Optional pre-step pressure-check prompt for DeepSeek Harness agents.",
   "type": "module",
@@ -10,8 +10,8 @@
     "test": "node test.mjs",
     "pack:check": "npm run build && npm pack --dry-run"
   },
-  "exports": { ".": "./host-v0.1.2.js", "./client": "./client-v0.1.3.js", "./icon": "./icon.svg", "./locale/*.json": "./locale/*.json" },
-  "files": ["index.js", "host-v0.1.2.js", "client.js", "client-v0.1.3.js", "build.mjs", "test.mjs", "cordis.patch.yml", "README.md", "icon.svg", "locale", "docs"],
+  "exports": { ".": "./host-v0.1.4-final.js", "./client": "./client-v0.1.4.js", "./icon": "./icon.svg", "./locale/*.json": "./locale/*.json" },
+  "files": ["index.js", "prompts.js", "host-v0.1.4-final.js", "client.js", "client-v0.1.4.js", "build.mjs", "test.mjs", "cordis.patch.yml", "README.md", "icon.svg", "locale", "docs"],
   "engines": { "dsh": ">=0.2.2-rc.3 <0.3.0-0" },
   "dependencies": {
     "@deepseek-ai/schemastery": "3.19.0"
