@@ -1,0 +1,49 @@
+# 压力怪 / Pressure monster
+
+DSH 内的可选自我检查提示插件，支持左侧「压力怪」面板及「插件 → 压力怪」配置页。原创小怪物会随 0–5 档切换表情、台词和检查项；右上角显示实际生效档位，选择后保存才应用。支持减少动态效果偏好。
+
+## 安装
+
+需要 DeepSeek Harness `>=0.2.2-rc.3 <0.3.0-0`。在 DSH 的「插件 → 添加插件」中安装本地仓库目录；也可在 DSH 会话里让 Agent 安装此目录。包内已包含当前客户端构建产物，不需要安装脚本。
+
+```bash
+git clone https://github.com/lotusTanglei/pressure-monster.git
+```
+
+插件内部包名保留为 `dsh-pressure-check`，配置行 ID 为 `pressure-check`，以兼容现有配置；界面名称是「压力怪」。
+
+## 使用
+
+1. 点击左侧「压力怪」。
+2. 拖动选择条或点击 0–5 的刻度。
+3. 点击「保存并生效」；成功后新用户请求按选定档位加入自检提示。
+
+- 0：关闭，不再添加新提示。
+- 1：检查主要前提。
+- 2：检查前提、歧义和反例。
+- 3：检查最强反驳。
+- 4：多角度自我批评。
+- 5：更严格的对抗审查。
+
+全新安装默认关闭检查，但保持插件运行以提供面板；更新保留已有 profile 的启用状态。0 档不会删除已进入会话历史的提示。档位只控制提示词，不调整供应商 reasoning effort，不保证越强越好。
+
+## 配置
+
+`pressure-check` 行配置支持 `enabled`、`onlyUserRequests`、`level` 和可选 `text`。选择条保存时清空自定义 `text`，确保提示词与档位一致。保存失败会保留错误及未保存选择；重新读取配置后可再点保存。工具续接和仅注入上下文的步骤默认跳过。
+
+适用于 DSH 内所有供应商，包括 OpenCode Go 与 Codex 中转；独立 Codex CLI 不经过此钩子。关闭整个插件行也会移除左侧入口。
+
+## 构建与验证
+
+```bash
+npm run build
+npm run pack:check
+```
+
+测试使用 DSH 自带的 Cordis / Schemastery，需在 DSH 会话中执行：
+
+```bash
+ELECTRON_RUN_AS_NODE=1 "$DSH_NODE_EXECUTABLE" test.mjs
+```
+
+`DSH_INSTALL_DIR` 由 DSH 提供，用于解析该安装版本的依赖。测试覆盖面板注入契约、保存回读、错误处理，以及实时切换 0–5 档的提示行为。浏览器视觉和键盘实测需要在当前 DSH 页面刷新后验证。

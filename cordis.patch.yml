@@ -1,0 +1,9 @@
+- insert:
+    - id: pressure-check
+      name: dsh-pressure-check
+      disabled: false
+      config:
+        enabled: false
+        onlyUserRequests: true
+        level: 3
+        text: ""

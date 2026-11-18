@@ -1,0 +1,31 @@
+{
+  "name": "dsh-pressure-check",
+  "version": "0.1.3",
+  "private": true,
+  "description": "Optional pre-step pressure-check prompt for DeepSeek Harness agents.",
+  "type": "module",
+  "repository": { "type": "git", "url": "https://github.com/lotusTanglei/pressure-monster.git" },
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node test.mjs",
+    "pack:check": "npm run build && npm pack --dry-run"
+  },
+  "exports": { ".": "./host-v0.1.2.js", "./client": "./client-v0.1.3.js", "./icon": "./icon.svg", "./locale/*.json": "./locale/*.json" },
+  "files": ["index.js", "host-v0.1.2.js", "client.js", "client-v0.1.3.js", "build.mjs", "test.mjs", "cordis.patch.yml", "README.md", "icon.svg", "locale", "docs"],
+  "engines": { "dsh": ">=0.2.2-rc.3 <0.3.0-0" },
+  "dependencies": {
+    "@deepseek-ai/schemastery": "3.19.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "~4.1.0",
+    "@deepseek-ai/dsh-llm": "0.2.2-rc.3"
+  },
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": ["@deepseek-ai/dsh-client-ui-sidebar", "@deepseek-ai/dsh-client-ui-layout", "@deepseek-ai/dsh-api-remotes"]
+    }
+  }
+}
